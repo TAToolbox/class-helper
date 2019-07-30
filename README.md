@@ -10,4 +10,4 @@
 
 ### **Change the directory paths for your use case**
 
-I would keep the class repo path set to `~/Documents/Test` for now so you don't run into any issues with the class repo during testing
+Keep the class repo path set to `~/Documents/Test` during testing until you are comfortable making changes to the _real_ class repo.
