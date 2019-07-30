@@ -6,11 +6,12 @@
 2. Copy this script to that folder 
 
    - Only necessary if you want to run the script from anywhere in bash
-   
 3. Change rights to the file with `chmod u+x ~/bin/class-helper`
 
    - This gives the user (u) the right to execute (x) the script
+4. Open the file in your preferred text editor and change the master Lesson Plans path (`01-Lesson-Plans/` or equivalent). Change the class repo path when you're ready.
+5. Execute the file with `class-helper` and use all that extra time to help students :)
 
-### **Change the directory paths for your use case**
 
-I advise most people to keep the class repo path set to `~/Documents/Test` during testing until you are comfortable making changes to the _real_ class repo.
+
+### Notes

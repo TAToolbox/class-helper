@@ -1,21 +1,36 @@
 #!/bin/bash
 
-# Data-Viz Lesson Plans directory location & Navigation
-DATAVIZ=<~/Path/To/Data-Viz/01-Lesson-Plans>
+# Data-Viz Lesson Plans directory location
+DATAVIZ=~/Path/To/Data-Viz/01-Lesson-Plans
 CLASSREPO=~/Documents/TEST # I would keep this a test folder to play with and not mess up the class repo
 
-# Pull changes to repos before doing anything
+# Check repo changes before doing anything
 function gitchecker () {
    cd $DATAVIZ
-   echo Pulling down changes to Lesson Plan
-   git pull -q origin master & spinner $!
-   echo Lesson Plan is up-to-date
-#   cd $CLASSREPO
-#   git pull -q origin master
-#   echo Class repo is up-to-date
+   echo "Checking for changes to Lesson Plan"
+   diffchecker "Lesson Plan"
+   cd $CLASSREPO
+   diffchecker "Class Repo"
 }
 
-spinner()
+function diffchecker () {
+   if git diff-index --quiet HEAD -- & spinner $!; then
+      # No changes
+      echo $1 is up to date
+   else
+      # Changes
+      read -r -p "$1 has changes, pull down changes? [Y/N]" lessonpull
+      if [lessonpull == [yY][eE][sS]|[Yy]]; then
+      echo Pulling $1
+      git pull -q origin master & spinner $!
+      else
+      echo Closing Class Helper
+      fi
+   fi
+}
+
+
+function spinner()
 {
     local pid=$1
     local delay=0.75
@@ -36,50 +51,48 @@ function topicfind () {
    read -r -p "What's the topic this week?: " topic        
    topicpath="`find -L $DATAVIZ -maxdepth 1 -iname *$topic* -type d -print`" 
    # Handler for find errors
-   if test -z "$topicpath"
-   then
+   if test -z "$topicpath"; then
       echo "$topic lesson not found, try again"
-      exit
    else
       # Output directory name and confirm prompt
-      read -r -p "$(echo $(basename $topicpath))? [Yes/No] " input 
+      read -r -p "$(echo $(basename $topicpath))? [Y/N] " input 
    fi
 }
 
 function saveyourself () {
    cd $CLASSREPO
    cd $(basename $topicpath)
-   echo Creating lesson level .gitignore
-   rm -r readme.md VideoGuide.md Supplemental
-   find 1 2 3 -maxdepth 3 -type d | sort | grep -v \"un\|Reg\" > .gitignore
-   folderarray=(1 2 3)
-   for dir in "${folderarray}"
+   echo Cleaning up
+   rm -r -f readme.md VideoGuide.md Supplemental
+   for x in 1 2 3
       do
       :
-      cd $dir
-      rm TimeTracker.xlsx LessonPlan.md
-      cd ..
+      rm $x/TimeTracker.xlsx $x/LessonPlan.md
       done
+   echo Creating lesson level .gitignore
+   find 1 2 3 -maxdepth 3 -type d | sort | grep -v \"un\|Reg\" > .gitignore
 }
 
 function copy2class () {
    # Copy Lesson Plan to class repository
-   $(cp -r $topicpath $CLASSREPO)
+   cp -r $topicpath $CLASSREPO
 }
+
+
 ###############################
 # Execution Start
 ###############################
 
 gitchecker
 topicfind
- 
+
 case $input in
-    [yY][eE][sS]|[yY])
-   echo "Copying $topic directory to $CLASSREPO"
+    [yY][eE][sS]|[Yy])
+   echo "Copying $(basename $topicpath) directory to $CLASSREPO"
    copy2class
    saveyourself
  ;;
-    [nN][oO]|[nN])
+    [nN][oO]|[Nn])
  echo "No"
        ;;
     *)
