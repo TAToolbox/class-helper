@@ -1,0 +1,88 @@
+#!/bin/bash
+
+# Data-Viz Lesson Plans directory location & Navigation
+DATAVIZ=<~/Path/To/Data-Viz/01-Lesson-Plans>
+CLASSREPO=~/Documents/TEST # I would keep this a test folder to play with and not mess up the class repo
+
+# Pull changes to repos before doing anything
+function gitchecker () {
+   cd $DATAVIZ
+   echo Pulling down changes to Lesson Plan
+   git pull -q origin master & spinner $!
+   echo Lesson Plan is up-to-date
+#   cd $CLASSREPO
+#   git pull -q origin master
+#   echo Class repo is up-to-date
+}
+
+spinner()
+{
+    local pid=$1
+    local delay=0.75
+    local spinstr='|/-\'
+    while [ "$(ps a | awk '{print $1}' | grep $pid)" ]; do
+        local temp=${spinstr#?}
+        printf " [%c]  " "$spinstr"
+        local spinstr=$temp${spinstr%"$temp"}
+        sleep $delay
+        printf "\b\b\b\b\b\b"
+    done
+    printf "    \b\b\b\b"
+}
+
+
+function topicfind () {
+   # Topic prompt
+   read -r -p "What's the topic this week?: " topic        
+   topicpath="`find -L $DATAVIZ -maxdepth 1 -iname *$topic* -type d -print`" 
+   # Handler for find errors
+   if test -z "$topicpath"
+   then
+      echo "$topic lesson not found, try again"
+      exit
+   else
+      # Output directory name and confirm prompt
+      read -r -p "$(echo $(basename $topicpath))? [Yes/No] " input 
+   fi
+}
+
+function saveyourself () {
+   cd $CLASSREPO
+   cd $(basename $topicpath)
+   echo Creating lesson level .gitignore
+   rm -r readme.md VideoGuide.md Supplemental
+   find 1 2 3 -maxdepth 3 -type d | sort | grep -v \"un\|Reg\" > .gitignore
+   folderarray=(1 2 3)
+   for dir in "${folderarray}"
+      do
+      :
+      cd $dir
+      rm TimeTracker.xlsx LessonPlan.md
+      cd ..
+      done
+}
+
+function copy2class () {
+   # Copy Lesson Plan to class repository
+   $(cp -r $topicpath $CLASSREPO)
+}
+###############################
+# Execution Start
+###############################
+
+gitchecker
+topicfind
+ 
+case $input in
+    [yY][eE][sS]|[yY])
+   echo "Copying $topic directory to $CLASSREPO"
+   copy2class
+   saveyourself
+ ;;
+    [nN][oO]|[nN])
+ echo "No"
+       ;;
+    *)
+ topicfind
+ ;;
+esac
