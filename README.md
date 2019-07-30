@@ -3,11 +3,14 @@
 ## Instructions:
 
 1. Create a `~/bin` folder if you don't already have one
-2. Copy this script to that folder
-3. Change rights to the file by typing `cd bin && chmod u+x class-helper`
+2. Copy this script to that folder 
 
-   - This is for all bash scripts, it won't run otherwise. You are welcome to try though.
+   - Only necessary if you want to run the script from anywhere in bash
+   
+3. Change rights to the file with `chmod u+x ~/bin/class-helper`
+
+   - This gives the user (u) the right to execute (x) the script
 
 ### **Change the directory paths for your use case**
 
-Keep the class repo path set to `~/Documents/Test` during testing until you are comfortable making changes to the _real_ class repo.
+I advise most people to keep the class repo path set to `~/Documents/Test` during testing until you are comfortable making changes to the _real_ class repo.
