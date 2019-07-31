@@ -1,6 +1,6 @@
 # Class Helper
 
-## Instructions:
+## Installation Instructions:
 
 1. Create a `~/bin` folder if you don't already have one
 2. Copy this script to that folder
@@ -15,8 +15,6 @@
 5. Execute the file with `class-helper` and use all that extra time to help students :)
 
 ## Known Bugs
-
-<hr>
 
 [![Github Issues](https://img.shields.io/github/issues/TAToolbox/class-helper)](https://github.com/TAToolbox/class-helper/issues)
 
