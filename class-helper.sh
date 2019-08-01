@@ -4,9 +4,10 @@
 #  Class Related Directories #
 ##############################
 
-# Data-Viz Lesson Plans directory location
-DATAVIZ=~/Documents/DataViz-Lesson-Plans/
-CLASSREPO=~/Documents/test
+# Lesson Plans Directory location
+DATAVIZ=~Path/to/master/lesson/plans
+# Class Repo Directory
+CLASSREPO=~Path/to/class/repo
 
 ###############################
 #        Shhhh Commands       #

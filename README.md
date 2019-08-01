@@ -1,18 +1,35 @@
 # Class Helper
 
-## Installation Instructions:
+## Setup:
 
-1. Create a `~/bin` folder if you don't already have one
-2. Copy this script to that folder
+Change the class related paths to your local paths for corresponding directories
 
-   - Only necessary if you want to run the script from anywhere in bash
+```bash
+##############################
+#  Class Related Directories #
+##############################
 
-3. Change rights to the file with `chmod u+x ~/bin/class-helper`
+# Lesson Plans Directory location
+DATAVIZ=~Path/to/master/lesson/plans #<--- ~/Documents/Bootcamp-Lesson-Plans
+# Class Repo Directory
+CLASSREPO=~Path/to/class/repo #<--- ~/Documents/UNIVERSITY201908.../MW
+```
 
-   - This gives the user (u) the right to execute (x) the script
+Be sure to add the day of the class to the path (MW/TTH)
 
-4. Open the file in your preferred text editor and change the master Lesson Plans path (`01-Lesson-Plans/` or equivalent). Change the class repo path when you're ready.
-5. Execute the file with `class-helper` and use all that extra time to help students :)
+## Running the script
+
+Once you have completed the setup, navigate to the folder in bash and type `class-helper.sh` and that's it. Follow the prompts and the script will handle the rest.
+
+## Tips to make it even easier
+
+Add the following to your .bashrc file to run the script from anywhere with an alias.
+
+```bash
+alias classhelper='cd ~/path/to/class-helper && sh class-helper.sh'
+```
+
+Reload bash and you're all set.
 
 ## Known Bugs
 
@@ -20,10 +37,15 @@
 
 ### Duplicate topics:
 
-`topic` strings with multiple matching directories will mirror commands to all matches without making that clear
+Weekly topics with multiple matching directories will mirror commands to all matches without making that clear
 
 **Workaround**:
 
 Use week number labels instead of topics
 
 `03` instead of `python`
+
+### Gitchecker quirks:
+
+Gitchecker only works for some repositories.
+I Will investigate and add more.
