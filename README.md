@@ -45,7 +45,7 @@ Use week number labels instead of topics
 
 `03` instead of `python`
 
-### Gitchecker quirks:
+### Gitchecker quirk:
 
 Gitchecker only works for some repositories.
 I Will investigate and add more.
