@@ -26,7 +26,7 @@ Once you have completed the setup, navigate to the folder in bash and type `clas
 Add the following to your .bashrc file to run the script from anywhere with an alias.
 
 ```bash
-alias classhelper='cd ~/path/to/class-helper && sh class-helper.sh'
+alias classhelper='pushd ~/path/to/class-helper && sh class-helper.sh && popd'
 ```
 
 Reload bash and you're all set.
