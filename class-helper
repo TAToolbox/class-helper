@@ -1,18 +1,37 @@
 #!/bin/bash
 
+##############################
+#  Class Related Directories #
+##############################
+
 # Data-Viz Lesson Plans directory location
-DATAVIZ=~/Path/To/Data-Viz/01-Lesson-Plans
-CLASSREPO=~/Documents/TEST # I would keep this a test folder to play with and not mess up the class repo
+DATAVIZ=~/Documents/DataViz-Lesson-Plans/
+CLASSREPO=~/Documents/test
+
+###############################
+#        Shhhh Commands       #
+###############################
+
+pushd () {
+    command pushd "$@" > /dev/null
+}
+
+popd () {
+    command popd "$@" > /dev/null
+}
+
+###############################
+#        Git Handling         #
+###############################
 
 # Check repo changes before doing anything
 function gitchecker () {
-   cd $DATAVIZ
    echo "Checking for changes to Lesson Plan"
-   diffchecker "Lesson Plan"
-   cd $CLASSREPO
-   diffchecker "Class Repo"
+   pushd $DATAVIZ; diffchecker "Lesson Plan"; popd
+   pushd $CLASSREPO; diffchecker "Class Repo"; popd
 }
 
+# Quietly check for differences in local and remote repos
 function diffchecker () {
    if git diff-index --quiet HEAD -- & spinner $!; then
       # No changes
@@ -20,16 +39,19 @@ function diffchecker () {
    else
       # Changes
       read -r -p "$1 has changes, pull down changes? [Y/N]" lessonpull
-      if [lessonpull == [yY][eE][sS]|[Yy]]; then
-      echo Pulling $1
-      git pull -q origin master & spinner $!
-      else
-      echo Closing Class Helper
-      fi
+      case $lessonpull in
+         [Yy]* ) 
+            git pull -q origin master & spinner $!;      
+         ;;
+         [Nn]* )
+            topicfind;;
+         * )
+            exit;;
+      esac
    fi
 }
 
-
+# Spinner for visual confirmation of process execution
 function spinner()
 {
     local pid=$1
@@ -45,23 +67,47 @@ function spinner()
     printf "    \b\b\b\b"
 }
 
+################################
+#       Meat and Potatoes      #
+################################
 
+# Prompt for weekly topic and pass 
 function topicfind () {
    # Topic prompt
    read -r -p "What's the topic this week?: " topic        
-   topicpath="`find -L $DATAVIZ -maxdepth 1 -iname *$topic* -type d -print`" 
-   # Handler for find errors
+   topicpath="`find -L $DATAVIZ/01-Lesson-Plans -maxdepth 1 -iname *$topic* -type d -print`" 
+   basetopic=$(basename $topicpath)
+   # Handler for errors or spelling
    if test -z "$topicpath"; then
       echo "$topic lesson not found, try again"
    else
-      # Output directory name and confirm prompt
-      read -r -p "$(echo $(basename $topicpath))? [Y/N] " input 
+      $1
    fi
 }
 
+function copy2class () {
+   # Output directory name and confirm prompt
+   read -r -p "$(echo $basetopic)? [Y/N] " input 
+   case $input in
+      [Yy]* ) 
+         echo "Copying 01-Lesson-Plans/$basetopic --> $CLASSREPO";
+         cp -r $topicpath $CLASSREPO;
+         saveyourself
+         homeworkhandler;;
+      [Nn]* ) 
+         topicfind;;
+      * ) 
+         exit;;
+   esac
+}
+
+############################
+#  Prevent Dumb Mistakes   #
+############################
+
+# Remove instruction-team only materials
 function saveyourself () {
-   cd $CLASSREPO
-   cd $(basename $topicpath)
+   pushd $CLASSREPO/$basetopic
    echo Cleaning up
    rm -r -f readme.md VideoGuide.md Supplemental
    for x in 1 2 3
@@ -69,33 +115,51 @@ function saveyourself () {
       :
       rm $x/TimeTracker.xlsx $x/LessonPlan.md
       done
-   echo Creating lesson level .gitignore
+   echo "Creating weekly .gitignore"
    find 1 2 3 -maxdepth 3 -type d | sort | grep -v \"un\|Reg\" > .gitignore
+   popd
 }
 
-function copy2class () {
-   # Copy Lesson Plan to class repository
-   cp -r $topicpath $CLASSREPO
+#######################
+#  Homework Handling  #
+#######################
+
+function homeworkhandler () {
+   read -r -p "Do you want to add the homework? [Y/N] " homework   
+   case $homework in
+      [Yy]* )
+         echo "Copying 02/Homework/$basetopic --> /HW/$basetopic"
+         mkdir $CLASSREPO/HW/$basetopic
+         cp -r $DATAVIZ/02-Homework/$basetopic/Instructions/* $CLASSREPO/HW/$basetopic
+         pushd $CLASSREPO/HW/$basetopic
+         echo "Cleaning up"
+         rm -r -f Solutions gradingrubric.md gradingrubrics      
+         popd;;
+      [Nn]* ) 
+         echo "Have a great class!";;
+      * ) 
+         exit;;
+   esac
 }
 
+##############################
+#     Use Case Prompt        #
+##############################
 
-###############################
-# Execution Start
-###############################
+# Allow for different use cases
+# Weekly Class Setup, Homework, etc...
 
-gitchecker
-topicfind
-
-case $input in
-    [yY][eE][sS]|[Yy])
-   echo "Copying $(basename $topicpath) directory to $CLASSREPO"
-   copy2class
-   saveyourself
- ;;
-    [nN][oO]|[Nn])
- echo "No"
-       ;;
-    *)
- topicfind
- ;;
+echo "What do you want to do?"
+echo "[1]: Weekly Setup [2]: Homework"
+read -r usecase
+case $usecase in
+   [1] ) 
+      gitchecker;
+      topicfind copy2class;;
+   [2] ) 
+      gitchecker;
+      topicfind homeworkhandler;;
+   * )
+      echo "Please choose a valid selection" 
+      caseswap;;
 esac
