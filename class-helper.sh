@@ -7,7 +7,7 @@
 # Lesson Plans Directory location
 DATAVIZ=~Path/to/master/lesson/plans
 # Class Repo Directory
-CLASSREPO=~Path/to/class/repo
+CLASSREPO=~Documents/Test
 
 ###############################
 #        Shhhh Commands       #
@@ -34,15 +34,14 @@ function gitchecker () {
 
 # Quietly check for differences in local and remote repos
 function diffchecker () {
-   if git diff-index --quiet HEAD -- & spinner $!; then
-      # No changes
+   if [[ `git diff HEAD origin/master` ]]; then
       echo $1 is up to date
    else
       # Changes
       read -r -p "$1 has changes, pull down changes? [Y/N]" lessonpull
       case $lessonpull in
          [Yy]* ) 
-            git pull -q origin master & spinner $!;      
+            git pull -q origin master;      
          ;;
          [Nn]* )
             topicfind;;
@@ -52,21 +51,6 @@ function diffchecker () {
    fi
 }
 
-# Spinner for visual confirmation of process execution
-function spinner()
-{
-    local pid=$1
-    local delay=0.75
-    local spinstr='|/-\'
-    while [ "$(ps a | awk '{print $1}' | grep $pid)" ]; do
-        local temp=${spinstr#?}
-        printf " [%c]  " "$spinstr"
-        local spinstr=$temp${spinstr%"$temp"}
-        sleep $delay
-        printf "\b\b\b\b\b\b"
-    done
-    printf "    \b\b\b\b"
-}
 
 ################################
 #       Meat and Potatoes      #
@@ -77,11 +61,13 @@ function topicfind () {
    # Topic prompt
    read -r -p "What's the topic this week?: " topic        
    topicpath="`find -L $DATAVIZ/01-Lesson-Plans -maxdepth 1 -iname *$topic* -type d -print`" 
-   basetopic=$(basename $topicpath)
+   
    # Handler for errors or spelling
    if test -z "$topicpath"; then
       echo "$topic lesson not found, try again"
+      topicfind $1
    else
+      basetopic=$(basename $topicpath)
       $1
    fi
 }
@@ -143,6 +129,37 @@ function homeworkhandler () {
    esac
 }
 
+
+##############################
+#    Activity Pushing        #
+##############################
+
+# Currently Set up to push out all unsolved
+# Single Activities is on the docket
+function activitypusher () {
+   pushd $CLASSREPO/$basetopic
+   echo Working from $basetopic directory
+   echo "Which Lecture Day?"
+   echo "[1]  [2]  [3]  [4]: all" 
+   read -r day
+   case $day in
+      [4] )
+         masspush
+         ;;
+       *)
+         echo "Commenting $basetopic Day $day Activities"
+         masspush
+         echo "Done"
+         echo "Have a great class!"
+         ;;
+   esac
+      
+}
+
+function masspush () {
+   sed -i "/^.*Solved/! s/^$day/#$day/g" $CLASSREPO/$basetopic/.gitignore
+}
+
 ##############################
 #     Use Case Prompt        #
 ##############################
@@ -151,7 +168,7 @@ function homeworkhandler () {
 # Weekly Class Setup, Homework, etc...
 
 echo "What do you want to do?"
-echo "[1]: Weekly Setup [2]: Homework"
+echo "[1]: Weekly Setup [2]: Homework [3]: Push Activities"
 read -r usecase
 case $usecase in
    [1] ) 
@@ -160,7 +177,10 @@ case $usecase in
    [2] ) 
       gitchecker;
       topicfind homeworkhandler;;
+   [3] )
+      gitchecker;
+      topicfind activitypusher;;
    * )
       echo "Please choose a valid selection" 
-      caseswap;;
+      class-helper.sh;;
 esac
