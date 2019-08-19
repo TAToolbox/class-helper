@@ -31,7 +31,7 @@ popd () {
 function gitchecker () {
    echo "Checking status of Repositories"
    pushd $DATAVIZ; diffchecker "Lesson Plan"; 
-   #pushd $CLASSREPO; diffchecker "Class Repo"; 
+   pushd $CLASSREPO; diffchecker "Class Repo"; 
    
 }
 
