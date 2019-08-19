@@ -8,6 +8,8 @@
 DATAVIZ=~Path/to/master/lesson/plans
 # Class Repo Directory
 CLASSREPO=~Documents/Test
+# Class Day Path
+CLASSDAY=/MW #/TTH
 
 ###############################
 #        Shhhh Commands       #
@@ -59,7 +61,7 @@ function diffchecker () {
 
 # Prompt for weekly topic and pass 
 function topicfind () {
-   pushd $CLASSREPO/Class-MW-Rice-Cookers
+   pushd $CLASSREPO/$CLASSDAY
    # Topic prompt
    read -r -p "What's the topic this week?: "  topic;
    topicpath="`find -L $DATAVIZ/01-Lesson-Plans -maxdepth 1 -iname *$topic* -type d -print -quit`" 
@@ -81,9 +83,9 @@ function copy2class () {
       [Nn]* ) 
          topicfind copy2class;;
       [Yy]* | * ) 
-         echo "Copying 01-Lesson-Plans/$basetopic --> /Class-MW-Rice-Cookers/$basetopic";
+         echo "Copying 01-Lesson-Plans/$basetopic --> /$CLASSDAY/$basetopic";
    
-         cp -r $topicpath $CLASSREPO/Class-MW-Rice-Cookers;
+         cp -r $topicpath $CLASSREPO/$CLASSDAY;
          saveyourself;
          dailysetup;;
    esac
@@ -96,7 +98,7 @@ function copy2class () {
 
 # Remove instruction-team only materials
 function saveyourself () {
-   pushd $CLASSREPO/Class-MW-Rice-Cookers/$basetopic
+   pushd $CLASSREPO/$CLASSDAY/$basetopic
    echo 'Cleaning up'
    rm -r -f readme.md VideoGuide.md Supplemental
    for x in 1 2 3
@@ -136,7 +138,7 @@ function homeworkhandler () {
 ##############################
 
 function dailysetup () {
-   pushd $CLASSREPO/Class-MW-Rice-Cookers/$basetopic
+   pushd $CLASSREPO/$CLASSDAY/$basetopic
    echo "Working from $basetopic directory"
    echo "Which Lecture Day?"
    read -r -p "[1]  [2]  [3] : " day
@@ -155,7 +157,7 @@ function dailysetup () {
 }
 
 function masspush () {
-   sed -i "/^.*Solved/! s/^$day/#$day/" $CLASSREPO/Class-MW-Rice-Cookers/$basetopic/.gitignore
+   sed -i "/^.*Solved/! s/^$day/#$day/" $CLASSREPO/$CLASSDAY/$basetopic/.gitignore
 }
 
 ##############################
@@ -163,7 +165,7 @@ function masspush () {
 ##############################
 
 function activitypusher () {
-   pushd $CLASSREPO/Class-MW-Rice-Cookers/$basetopic
+   pushd $CLASSREPO/$CLASSDAY/$basetopic
    linecount=0
    for line in $(cat .gitignore)
    do

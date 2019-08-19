@@ -12,10 +12,11 @@ Change the class related paths to your local paths for corresponding directories
 # Lesson Plans Directory location
 DATAVIZ=~Path/to/master/lesson/plans #<--- ~/Documents/Bootcamp-Lesson-Plans
 # Class Repo Directory
-CLASSREPO=~Path/to/class/repo #<--- ~/Documents/UNIVERSITY201908.../MW
+CLASSREPO=~Path/to/class/repo #<--- ~/Documents/UNIVERSITY201908...
+CLASSDAY=/MW #/TTH #<--- Your class day folder
 ```
 
-Be sure to add the day of the class to the path (MW/TTH)
+Be sure to change your class day path as well.
 
 ## Running the script
 
