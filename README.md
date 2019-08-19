@@ -35,17 +35,4 @@ Reload bash and you're all set.
 
 [![Github Issues](https://img.shields.io/github/issues/TAToolbox/class-helper)](https://github.com/TAToolbox/class-helper/issues)
 
-### Duplicate topics:
-
-Weekly topics with multiple matching directories will mirror commands to all matches without making that clear
-
-**Workaround**:
-
-Use week number labels instead of topics
-
-`03` instead of `python`
-
-### Gitchecker quirk:
-
-Gitchecker only works for some repositories.
-I Will investigate and add more.
+None that I know of at the moment!
